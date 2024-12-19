@@ -13,8 +13,7 @@
             background-color: #000;
         }
         canvas {
-            border: 2px solid #fff;
-            position: relative;
+            border: 2px solid #fd2dd5;
             background-color: #000;
         }
     </style>
@@ -41,12 +40,6 @@
             context.fillRect(x, y, width, height);
         }
 
-        function drawText(text, x, y, color, fontSize = "20px") {
-            context.fillStyle = color;
-            context.font = `${fontSize} Arial`;
-            context.fillText(text, x, y);
-        }
-
         function drawCircle(x, y, radius, color) {
             context.fillStyle = color;
             context.beginPath();
@@ -57,8 +50,15 @@
 
         function drawNet() {
             for (let i = 0; i < canvas.height; i += 20) {
-                drawRect(canvas.width / 2 - 1, i, 2, 10, '#fff');
+                drawRect(canvas.width / 2 - 1, i, 2, 10, '#fd2dd5');
             }
+        }
+
+        function drawScores() {
+            context.fillStyle = "#fd2dd5";
+            context.font = "20px Arial";
+            context.fillText(`Jugador: ${playerScore}`, canvas.width / 4, 30);
+            context.fillText(`CPU: ${cpuScore}`, (canvas.width * 3) / 4 - 50, 30);
         }
 
         function resetBall() {
@@ -100,10 +100,10 @@
         }
 
         function movePaddles() {
-            if (ballY > cpuY + paddleHeight / 2) {
-                cpuY += playerSpeed;
+            if (cpuY + paddleHeight / 2 < ballY) {
+                cpuY += playerSpeed - 2; // CPU se mueve más lento que la pelota
             } else {
-                cpuY -= playerSpeed;
+                cpuY -= playerSpeed - 2;
             }
         }
 
@@ -115,14 +115,13 @@
         function render() {
             drawRect(0, 0, canvas.width, canvas.height, '#000');
             drawNet();
-            drawRect(0, playerY, paddleWidth, paddleHeight, '#fff');
-            drawRect(canvas.width - paddleWidth, cpuY, paddleWidth, paddleHeight, '#fff');
+            drawScores();
+            drawRect(0, playerY, paddleWidth, paddleHeight, '#fd2dd5');
+            drawRect(canvas.width - paddleWidth, cpuY, paddleWidth, paddleHeight, '#fd2dd5');
             drawCircle(ballX, ballY, ballSize, '#fff');
-            drawText(`Jugador: ${playerScore}`, 10, 30, "#fd2dd5");
-            drawText(`CPU: ${cpuScore}`, canvas.width - 100, 30, "#fd2dd5");
 
             if (gameOver) {
-                context.fillStyle = '#fff';
+                context.fillStyle = '#fd2dd5';
                 context.font = '48px Arial';
                 const message = playerScore >= winningScore ? '¡Ganaste!' : 'La CPU ganó';
                 context.fillText(message, canvas.width / 2 - context.measureText(message).width / 2, canvas.height / 2);
