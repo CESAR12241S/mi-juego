@@ -13,7 +13,7 @@
             background-color: #000;
         }
         canvas {
-            border: 2px solid #fd2dd5;
+            border: 5px solid #fd2dd5; /* Color del borde del campo */
             background-color: #000;
         }
     </style>
@@ -100,9 +100,12 @@
         }
 
         function movePaddles() {
-            if (cpuY + paddleHeight / 2 < ballY) {
+            const cpuEffectiveness = 0.9; // 90% de efectividad
+            const targetY = ballY - paddleHeight / 2;
+
+            if (cpuY + paddleHeight / 2 < targetY * cpuEffectiveness) {
                 cpuY += playerSpeed - 2; // CPU se mueve más lento que la pelota
-            } else {
+            } else if (cpuY + paddleHeight / 2 > targetY * cpuEffectiveness) {
                 cpuY -= playerSpeed - 2;
             }
         }
