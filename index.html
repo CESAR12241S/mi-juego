@@ -12,36 +12,15 @@
             height: 100vh;
             background-color: #000;
         }
-        #game-container {
-            width: 100%;
-            max-width: 800px;
-            height: 500px;
+        canvas {
             border: 2px solid #fd2dd5;
             border-radius: 10px;
-            position: relative;
-            overflow: hidden;
-        }
-        canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-        }
-        #score {
-            position: absolute;
-            top: 10px;
-            width: 100%;
-            text-align: center;
-            color: #fd2dd5;
-            font-family: Arial, sans-serif;
-            font-size: 18px;
+            box-sizing: border-box;
         }
     </style>
 </head>
 <body>
-    <div id="game-container">
-        <div id="score">Jugador: 0 | CPU: 0</div>
-        <canvas id="pongCanvas" width="800" height="500"></canvas>
-    </div>
+    <canvas id="pongCanvas" width="800" height="500"></canvas>
     <script>
         const canvas = document.getElementById('pongCanvas');
         const context = canvas.getContext('2d');
@@ -50,37 +29,50 @@
         const ballSize = 10;
         const playerSpeed = 8, cpuEffectiveness = 0.9;
         const winningScore = 5;
-        let playerY = canvas.height / 2 - paddleHeight / 2;
-        let cpuY = canvas.height / 2 - paddleHeight / 2;
+        let playerY = (canvas.height - paddleHeight) / 2;
+        let cpuY = (canvas.height - paddleHeight) / 2;
         let ballX = canvas.width / 2, ballY = canvas.height / 2;
         let ballSpeedX = 5, ballSpeedY = 5;
         let playerScore = 0, cpuScore = 0;
         let gameOver = false;
 
-        const updateScore = () => {
-            document.getElementById('score').innerText = `Jugador: ${playerScore} | CPU: ${cpuScore}`;
-        };
+        function drawRect(x, y, width, height, color) {
+            context.fillStyle = color;
+            context.fillRect(x, y, width, height);
+        }
 
-        const resetBall = () => {
+        function drawCircle(x, y, radius, color) {
+            context.fillStyle = color;
+            context.beginPath();
+            context.arc(x, y, radius, 0, Math.PI * 2, false);
+            context.closePath();
+            context.fill();
+        }
+
+        function drawNet() {
+            for (let i = 0; i < canvas.height; i += 20) {
+                drawRect(canvas.width / 2 - 1, i, 2, 10, '#fd2dd5');
+            }
+        }
+
+        function resetBall() {
             if (playerScore >= winningScore || cpuScore >= winningScore) {
                 gameOver = true;
-                alert(playerScore >= winningScore ? '¡Ganaste!' : 'La CPU ganó');
-                playerScore = 0;
-                cpuScore = 0;
-                gameOver = false;
-                updateScore();
             }
             ballX = canvas.width / 2;
             ballY = canvas.height / 2;
             ballSpeedX = -ballSpeedX;
-        };
+        }
 
-        const moveBall = () => {
+        function moveBall() {
             if (gameOver) return;
+
             ballX += ballSpeedX;
             ballY += ballSpeedY;
 
-            if (ballY <= 0 || ballY >= canvas.height) ballSpeedY = -ballSpeedY;
+            if (ballY <= 0 || ballY >= canvas.height) {
+                ballSpeedY = -ballSpeedY;
+            }
 
             if (ballX <= paddleWidth) {
                 if (ballY > playerY && ballY < playerY + paddleHeight) {
@@ -90,6 +82,7 @@
                     resetBall();
                 }
             }
+
             if (ballX >= canvas.width - paddleWidth) {
                 if (ballY > cpuY && ballY < cpuY + paddleHeight) {
                     ballSpeedX = -ballSpeedX;
@@ -98,58 +91,68 @@
                     resetBall();
                 }
             }
-        };
+        }
 
-        const movePaddles = () => {
+        function movePaddles() {
+            const targetY = ballY - paddleHeight / 2;
             const cpuCenter = cpuY + paddleHeight / 2;
+
             if (cpuCenter < ballY - 35) {
                 cpuY += playerSpeed * cpuEffectiveness;
             } else if (cpuCenter > ballY + 35) {
                 cpuY -= playerSpeed * cpuEffectiveness;
             }
-        };
+        }
 
-        const render = () => {
-            context.clearRect(0, 0, canvas.width, canvas.height);
-            context.fillStyle = '#000';
-            context.fillRect(0, 0, canvas.width, canvas.height);
-
-            context.fillStyle = '#fd2dd5';
-            context.fillRect(0, playerY, paddleWidth, paddleHeight);
-            context.fillRect(canvas.width - paddleWidth, cpuY, paddleWidth, paddleHeight);
-
-            context.beginPath();
-            context.arc(ballX, ballY, ballSize, 0, Math.PI * 2);
-            context.fillStyle = '#fff';
-            context.fill();
-
-            context.setLineDash([10, 5]);
-            context.strokeStyle = '#fd2dd5';
-            context.lineWidth = 2;
-            context.beginPath();
-            context.moveTo(canvas.width / 2, 0);
-            context.lineTo(canvas.width / 2, canvas.height);
-            context.stroke();
-        };
-
-        const update = () => {
+        function update() {
             moveBall();
             movePaddles();
-            updateScore();
-        };
+        }
 
-        const gameLoop = () => {
+        function render() {
+            drawRect(0, 0, canvas.width, canvas.height, '#000');
+            drawNet();
+            drawRect(0, playerY, paddleWidth, paddleHeight, '#fd2dd5');
+            drawRect(canvas.width - paddleWidth, cpuY, paddleWidth, paddleHeight, '#fd2dd5');
+            drawCircle(ballX, ballY, ballSize, '#fff');
+
+            context.fillStyle = '#fd2dd5';
+            context.font = '20px Arial';
+            context.fillText(`Jugador: ${playerScore}`, 20, 30);
+            context.fillText(`CPU: ${cpuScore}`, canvas.width - 100, 30);
+
+            if (gameOver) {
+                context.fillStyle = '#fd2dd5';
+                context.font = '48px Arial';
+                const message = playerScore >= winningScore ? '¡Ganaste!' : 'La CPU ganó';
+                context.fillText(message, canvas.width / 2 - context.measureText(message).width / 2, canvas.height / 2);
+                context.font = '24px Arial';
+                context.fillText('Haz clic para reiniciar', canvas.width / 2 - context.measureText('Haz clic para reiniciar').width / 2, canvas.height / 2 + 40);
+            }
+        }
+
+        function gameLoop() {
             update();
             render();
-        };
+        }
 
         setInterval(gameLoop, 1000 / 60);
 
-        canvas.addEventListener('mousemove', (event) => {
+        window.addEventListener('mousemove', (event) => {
             const rect = canvas.getBoundingClientRect();
-            playerY = event.clientY - rect.top - paddleHeight / 2;
+            const root = document.documentElement;
+            const mouseY = event.clientY - rect.top - root.scrollTop;
+            playerY = mouseY - paddleHeight / 2;
             if (playerY < 0) playerY = 0;
             if (playerY > canvas.height - paddleHeight) playerY = canvas.height - paddleHeight;
+        });
+
+        canvas.addEventListener('click', () => {
+            if (gameOver) {
+                playerScore = 0;
+                cpuScore = 0;
+                gameOver = false;
+            }
         });
     </script>
 </body>
