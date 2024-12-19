@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Juego de Pong</title>
+    <title>Juego de Pong Mejorado</title>
     <style>
         body {
             display: flex;
@@ -10,15 +10,38 @@
             align-items: center;
             height: 100vh;
             margin: 0;
-            background-color: #000;
+            background-color: #282c34;
+            color: #61dafb;
+            font-family: Arial, sans-serif;
         }
         canvas {
-            border: 2px solid #fff;
+            border: 2px solid #61dafb;
+            background-color: #000;
+        }
+        #scoreboard {
+            position: absolute;
+            top: 20px;
+            display: flex;
+            justify-content: space-between;
+            width: 800px;
+            font-size: 24px;
+        }
+        #instructions {
+            position: absolute;
+            bottom: 20px;
+            text-align: center;
+            width: 100%;
+            font-size: 18px;
         }
     </style>
 </head>
 <body>
+    <div id="scoreboard">
+        <div>Jugador: <span id="playerScore">0</span></div>
+        <div>CPU: <span id="cpuScore">0</span></div>
+    </div>
     <canvas id="pongCanvas" width="800" height="400"></canvas>
+    <div id="instructions">Usa el ratón para mover la paleta. ¡Haz clic para comenzar!</div>
     <script>
         const canvas = document.getElementById('pongCanvas');
         const context = canvas.getContext('2d');
@@ -33,6 +56,7 @@
         let playerScore = 0, cpuScore = 0;
         const winningScore = 5;
         let gameOver = false;
+        let gameStarted = false;
 
         function drawRect(x, y, width, height, color) {
             context.fillStyle = color;
@@ -49,7 +73,7 @@
 
         function drawNet() {
             for (let i = 0; i < canvas.height; i += 20) {
-                drawRect(canvas.width / 2 - 1, i, 2, 10, '#fff');
+                drawRect(canvas.width / 2 - 1, i, 2, 10, '#61dafb');
             }
         }
 
@@ -63,7 +87,7 @@
         }
 
         function moveBall() {
-            if (gameOver) return;
+            if (gameOver || !gameStarted) return;
 
             ballX += ballSpeedX;
             ballY += ballSpeedY;
@@ -77,6 +101,7 @@
                     ballSpeedX = -ballSpeedX;
                 } else if (ballX < 0) {
                     cpuScore++;
+                    document.getElementById('cpuScore').innerText = cpuScore;
                     resetBall();
                 }
             }
@@ -86,6 +111,7 @@
                     ballSpeedX = -ballSpeedX;
                 } else if (ballX > canvas.width) {
                     playerScore++;
+                    document.getElementById('playerScore').innerText = playerScore;
                     resetBall();
                 }
             }
@@ -107,12 +133,12 @@
         function render() {
             drawRect(0, 0, canvas.width, canvas.height, '#000');
             drawNet();
-            drawRect(0, playerY, paddleWidth, paddleHeight, '#fff');
-            drawRect(canvas.width - paddleWidth, cpuY, paddleWidth, paddleHeight, '#fff');
-            drawCircle(ballX, ballY, ballSize, '#fff');
+            drawRect(0, playerY, paddleWidth, paddleHeight, '#61dafb');
+            drawRect(canvas.width - paddleWidth, cpuY, paddleWidth, paddleHeight, '#61dafb');
+            drawCircle(ballX, ballY, ballSize, '#61dafb');
 
             if (gameOver) {
-                context.fillStyle = '#fff';
+                context.fillStyle = '#61dafb';
                 context.font = '48px Arial';
                 const message = playerScore >= winningScore ? '¡Ganaste!' : 'La CPU ganó';
                 context.fillText(message, canvas.width / 2 - context.measureText(message).width / 2, canvas.height / 2);
@@ -139,7 +165,13 @@
             if (gameOver) {
                 playerScore = 0;
                 cpuScore = 0;
+                document.getElementById('playerScore').innerText = playerScore;
+                document.getElementById('cpuScore').innerText = cpuScore;
                 gameOver = false;
+            }
+            if (!gameStarted) {
+                gameStarted = true;
+                document.getElementById('instructions').style.display = 'none';
             }
         });
     </script>
