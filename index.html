@@ -15,13 +15,15 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background-color: #000;
+            background-color: #000000; /* Fondo negro */
         }
         canvas {
             width: 100%;
             max-width: 800px; /* Tamaño máximo */
             aspect-ratio: 16 / 10; /* Proporción del canvas */
-            background-color: #000; /* Fondo negro */
+            background-color: #000000; /* Fondo negro para "esconder" el borde */
+            border: 2px solid #000000; /* Bordes invisibles */
+            border-radius: 10px; /* Opcional, puedes quitar esto si no es necesario */
         }
     </style>
 </head>
@@ -115,7 +117,7 @@
         }
 
         function render() {
-            drawRect(0, 0, canvas.width, canvas.height, '#000');
+            drawRect(0, 0, canvas.width, canvas.height, '#000000');
             drawNet();
             drawRect(0, playerY, paddleWidth, paddleHeight, '#fd2dd5');
             drawRect(canvas.width - paddleWidth, cpuY, paddleWidth, paddleHeight, '#fd2dd5');
