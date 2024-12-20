@@ -2,6 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Juego de Pong</title>
     <style>
         body {
@@ -13,9 +14,11 @@
             background-color: #000;
         }
         canvas {
-            border: 2px solid #000000; /* Borde negro para ocultar el marco */
+            border: 2px solid #000; /* Ocultamos el marco visualmente */
             border-radius: 10px;
             box-sizing: border-box;
+            max-width: 100%;
+            height: auto;
         }
     </style>
 </head>
@@ -51,7 +54,7 @@
 
         function drawNet() {
             for (let i = 0; i < canvas.height; i += 20) {
-                drawRect(canvas.width / 2 - 1, i, 2, 10, '#fd2dd5'); // Color rosa para la red
+                drawRect(canvas.width / 2 - 1, i, 2, 10, '#fd2dd5'); // Rosa para la red
             }
         }
 
@@ -104,7 +107,7 @@
         }
 
         function render() {
-            drawRect(0, 0, canvas.width, canvas.height, '#000000'); // Fondo negro
+            drawRect(0, 0, canvas.width, canvas.height, '#000'); // Fondo negro
             drawNet();
 
             // Paletas del jugador y la CPU en blanco
