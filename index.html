@@ -5,20 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Juego de Pong</title>
     <style>
-        body {
+        * {
             margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background-color: #000;
+            background-color: #000000; /* Fondo negro */
         }
         canvas {
-            border: 2px solid #000; /* Ocultamos el marco visualmente */
-            border-radius: 10px;
-            box-sizing: border-box;
-            max-width: 100%;
-            height: auto;
+            width: 100%;
+            max-width: 800px; /* Tamaño máximo */
+            aspect-ratio: 16 / 10; /* Proporción del canvas */
+            background-color: #000000; /* Fondo negro */
+            border: none; /* Sin bordes */
+            border-radius: 10px; /* Opcional */
         }
     </style>
 </head>
@@ -30,7 +35,7 @@
 
         const paddleWidth = 10, paddleHeight = 100;
         const ballSize = 10;
-        const playerSpeed = 8, cpuEffectiveness = 0.7;
+        const playerSpeed = 8, cpuEffectiveness = 0.8;
         const winningScore = 5;
         let playerY = (canvas.height - paddleHeight) / 2;
         let cpuY = (canvas.height - paddleHeight) / 2;
@@ -54,7 +59,7 @@
 
         function drawNet() {
             for (let i = 0; i < canvas.height; i += 20) {
-                drawRect(canvas.width / 2 - 1, i, 2, 10, '#fd2dd5'); // Rosa para la red
+                drawRect(canvas.width / 2 - 1, i, 2, 10, '#fd2dd5');
             }
         }
 
@@ -106,50 +111,37 @@
             }
         }
 
+        function update() {
+            moveBall();
+            movePaddles();
+        }
+
         function render() {
-            drawRect(0, 0, canvas.width, canvas.height, '#000'); // Fondo negro
+            drawRect(0, 0, canvas.width, canvas.height, '#000000');
             drawNet();
+            drawRect(0, playerY, paddleWidth, paddleHeight, '#fd2dd5');
+            drawRect(canvas.width - paddleWidth, cpuY, paddleWidth, paddleHeight, '#fd2dd5');
+            drawCircle(ballX, ballY, ballSize, '#fff');
 
-            // Paletas del jugador y la CPU en blanco
-            drawRect(0, playerY, paddleWidth, paddleHeight, '#ffffff');
-            drawRect(canvas.width - paddleWidth, cpuY, paddleWidth, paddleHeight, '#ffffff');
-
-            // Pelota en blanco
-            drawCircle(ballX, ballY, ballSize, '#ffffff');
-
-            // Puntajes en blanco
-            context.fillStyle = '#ffffff';
+            // Cambiamos el color del texto a blanco
+            context.fillStyle = '#ffffff'; /* Texto en blanco */
             context.font = '20px Arial';
             context.fillText(`Jugador: ${playerScore}`, 20, 30);
             context.fillText(`CPU: ${cpuScore}`, canvas.width - 100, 30);
 
-            // Mensaje de fin de juego
             if (gameOver) {
                 context.fillStyle = '#fd2dd5';
                 context.font = '48px Arial';
                 const message = playerScore >= winningScore ? '¡Ganaste!' : 'La CPU ganó';
-                context.fillText(
-                    message,
-                    canvas.width / 2 - context.measureText(message).width / 2,
-                    canvas.height / 2
-                );
+                context.fillText(message, canvas.width / 2 - context.measureText(message).width / 2, canvas.height / 2);
                 context.font = '24px Arial';
-                context.fillText(
-                    'Haz clic para reiniciar',
-                    canvas.width / 2 - context.measureText('Haz clic para reiniciar').width / 2,
-                    canvas.height / 2 + 40
-                );
+                context.fillText('Haz clic para reiniciar', canvas.width / 2 - context.measureText('Haz clic para reiniciar').width / 2, canvas.height / 2 + 40);
             }
         }
 
         function gameLoop() {
             update();
             render();
-        }
-
-        function update() {
-            moveBall();
-            movePaddles();
         }
 
         setInterval(gameLoop, 1000 / 60);
