@@ -19,10 +19,9 @@
         }
         canvas {
             width: 100%;
-            max-width: 800px; /* Tamaño máximo para pantallas grandes */
+            max-width: 800px; /* Tamaño máximo */
             aspect-ratio: 16 / 10; /* Proporción del canvas */
-            border-radius: 10px; /* Si no quieres borde, simplemente no uses border-radius */
-            background-color: #000; /* Fondo negro para canvas */
+            background-color: #000; /* Fondo negro */
         }
     </style>
 </head>
@@ -34,7 +33,7 @@
 
         const paddleWidth = 10, paddleHeight = 100;
         const ballSize = 10;
-        const playerSpeed = 8, cpuEffectiveness = 0.8; // Ajuste de efectividad
+        const playerSpeed = 8, cpuEffectiveness = 0.8;
         const winningScore = 5;
         let playerY = (canvas.height - paddleHeight) / 2;
         let cpuY = (canvas.height - paddleHeight) / 2;
