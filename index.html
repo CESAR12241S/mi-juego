@@ -21,7 +21,8 @@
             width: 100%;
             max-width: 800px; /* Tamaño máximo para pantallas grandes */
             aspect-ratio: 16 / 10; /* Proporción del canvas */
-            border-radius: 10px;
+            border-radius: 10px; /* Si no quieres borde, simplemente no uses border-radius */
+            background-color: #000; /* Fondo negro para canvas */
         }
     </style>
 </head>
@@ -130,4 +131,35 @@
                 context.fillStyle = '#fd2dd5';
                 context.font = '48px Arial';
                 const message = playerScore >= winningScore ? '¡Ganaste!' : 'La CPU ganó';
-                context.fillText(message, canvas.width / 2 - context.measureText(message).width / 2, canvas.height / 
+                context.fillText(message, canvas.width / 2 - context.measureText(message).width / 2, canvas.height / 2);
+                context.font = '24px Arial';
+                context.fillText('Haz clic para reiniciar', canvas.width / 2 - context.measureText('Haz clic para reiniciar').width / 2, canvas.height / 2 + 40);
+            }
+        }
+
+        function gameLoop() {
+            update();
+            render();
+        }
+
+        setInterval(gameLoop, 1000 / 60);
+
+        window.addEventListener('mousemove', (event) => {
+            const rect = canvas.getBoundingClientRect();
+            const root = document.documentElement;
+            const mouseY = event.clientY - rect.top - root.scrollTop;
+            playerY = mouseY - paddleHeight / 2;
+            if (playerY < 0) playerY = 0;
+            if (playerY > canvas.height - paddleHeight) playerY = canvas.height - paddleHeight;
+        });
+
+        canvas.addEventListener('click', () => {
+            if (gameOver) {
+                playerScore = 0;
+                cpuScore = 0;
+                gameOver = false;
+            }
+        });
+    </script>
+</body>
+</html>
