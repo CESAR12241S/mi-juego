@@ -4,38 +4,59 @@
     <meta charset="UTF-8">
     <title>Juego de Pong</title>
     <style>
-        body {
+        * {
             margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
             background-color: #000;
+            overflow: hidden;
         }
         canvas {
-            border: 2px solid #fd2dd5;
-            border-radius: 10px;
-            box-sizing: border-box;
+            display: block;
+            max-width: 100%;
+            height: auto;
         }
     </style>
 </head>
 <body>
-    <canvas id="pongCanvas" width="800" height="500"></canvas>
+    <canvas id="pongCanvas"></canvas>
     <script>
         const canvas = document.getElementById('pongCanvas');
         const context = canvas.getContext('2d');
 
-        const paddleWidth = 10, paddleHeight = 100;
-        const ballSize = 10;
-        const playerSpeed = 8, cpuEffectiveness = 0.7;
-        const winningScore = 5;
-        let playerY = (canvas.height - paddleHeight) / 2;
-        let cpuY = (canvas.height - paddleHeight) / 2;
-        let ballX = canvas.width / 2, ballY = canvas.height / 2;
-        let ballSpeedX = 5, ballSpeedY = 5;
+        let canvasWidth, canvasHeight;
+        const paddleWidth = 10, paddleHeightFactor = 0.2, ballSizeFactor = 0.02;
+        let paddleHeight, ballSize;
+        let playerY, cpuY, ballX, ballY, ballSpeedX, ballSpeedY;
         let playerScore = 0, cpuScore = 0;
+        const winningScore = 5;
         let gameOver = false;
+        const playerSpeed = 8, cpuEffectiveness = 0.7;
 
+        // Resize canvas to fit the window
+        function resizeCanvas() {
+            canvasWidth = window.innerWidth * 0.9; // 90% of the window width
+            canvasHeight = window.innerHeight * 0.6; // 60% of the window height
+            canvas.width = canvasWidth;
+            canvas.height = canvasHeight;
+
+            paddleHeight = canvasHeight * paddleHeightFactor; // Paddle height is a percentage of canvas height
+            ballSize = canvasHeight * ballSizeFactor; // Ball size is a percentage of canvas height
+            playerY = (canvasHeight - paddleHeight) / 2;
+            cpuY = (canvasHeight - paddleHeight) / 2;
+            ballX = canvasWidth / 2;
+            ballY = canvasHeight / 2;
+            ballSpeedX = 5;
+            ballSpeedY = 5;
+        }
+
+        // Draw function
         function drawRect(x, y, width, height, color) {
             context.fillStyle = color;
             context.fillRect(x, y, width, height);
@@ -50,8 +71,8 @@
         }
 
         function drawNet() {
-            for (let i = 0; i < canvas.height; i += 20) {
-                drawRect(canvas.width / 2 - 1, i, 2, 10, '#fd2dd5');
+            for (let i = 0; i < canvasHeight; i += 20) {
+                drawRect(canvasWidth / 2 - 1, i, 2, 10, '#fd2dd5');
             }
         }
 
@@ -59,8 +80,8 @@
             if (playerScore >= winningScore || cpuScore >= winningScore) {
                 gameOver = true;
             }
-            ballX = canvas.width / 2;
-            ballY = canvas.height / 2;
+            ballX = canvasWidth / 2;
+            ballY = canvasHeight / 2;
             ballSpeedX = -ballSpeedX;
         }
 
@@ -70,7 +91,7 @@
             ballX += ballSpeedX;
             ballY += ballSpeedY;
 
-            if (ballY <= 0 || ballY >= canvas.height) {
+            if (ballY <= 0 || ballY >= canvasHeight) {
                 ballSpeedY = -ballSpeedY;
             }
 
@@ -83,10 +104,10 @@
                 }
             }
 
-            if (ballX >= canvas.width - paddleWidth) {
+            if (ballX >= canvasWidth - paddleWidth) {
                 if (ballY > cpuY && ballY < cpuY + paddleHeight) {
                     ballSpeedX = -ballSpeedX;
-                } else if (ballX > canvas.width) {
+                } else if (ballX > canvasWidth) {
                     playerScore++;
                     resetBall();
                 }
@@ -110,24 +131,24 @@
         }
 
         function render() {
-            drawRect(0, 0, canvas.width, canvas.height, '#000');
+            drawRect(0, 0, canvasWidth, canvasHeight, '#000');
             drawNet();
             drawRect(0, playerY, paddleWidth, paddleHeight, '#fd2dd5');
-            drawRect(canvas.width - paddleWidth, cpuY, paddleWidth, paddleHeight, '#fd2dd5');
+            drawRect(canvasWidth - paddleWidth, cpuY, paddleWidth, paddleHeight, '#fd2dd5');
             drawCircle(ballX, ballY, ballSize, '#fff');
 
             context.fillStyle = '#fd2dd5';
             context.font = '20px Arial';
             context.fillText(`Jugador: ${playerScore}`, 20, 30);
-            context.fillText(`CPU: ${cpuScore}`, canvas.width - 100, 30);
+            context.fillText(`CPU: ${cpuScore}`, canvasWidth - 100, 30);
 
             if (gameOver) {
                 context.fillStyle = '#fd2dd5';
                 context.font = '48px Arial';
                 const message = playerScore >= winningScore ? '¡Ganaste!' : 'La CPU ganó';
-                context.fillText(message, canvas.width / 2 - context.measureText(message).width / 2, canvas.height / 2);
+                context.fillText(message, canvasWidth / 2 - context.measureText(message).width / 2, canvasHeight / 2);
                 context.font = '24px Arial';
-                context.fillText('Haz clic para reiniciar', canvas.width / 2 - context.measureText('Haz clic para reiniciar').width / 2, canvas.height / 2 + 40);
+                context.fillText('Haz clic para reiniciar', canvasWidth / 2 - context.measureText('Haz clic para reiniciar').width / 2, canvasHeight / 2 + 40);
             }
         }
 
@@ -138,13 +159,14 @@
 
         setInterval(gameLoop, 1000 / 60);
 
+        window.addEventListener('resize', resizeCanvas); // Re-adjust canvas on window resize
         window.addEventListener('mousemove', (event) => {
             const rect = canvas.getBoundingClientRect();
             const root = document.documentElement;
             const mouseY = event.clientY - rect.top - root.scrollTop;
             playerY = mouseY - paddleHeight / 2;
             if (playerY < 0) playerY = 0;
-            if (playerY > canvas.height - paddleHeight) playerY = canvas.height - paddleHeight;
+            if (playerY > canvasHeight - paddleHeight) playerY = canvasHeight - paddleHeight;
         });
 
         canvas.addEventListener('click', () => {
@@ -154,6 +176,8 @@
                 gameOver = false;
             }
         });
+
+        resizeCanvas(); // Initial call to set canvas size
     </script>
 </body>
 </html>
