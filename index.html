@@ -21,9 +21,9 @@
             width: 100%;
             max-width: 800px; /* Tamaño máximo */
             aspect-ratio: 16 / 10; /* Proporción del canvas */
-            background-color: #000000; /* Fondo negro para "esconder" el borde */
+            background-color: #000000; /* Fondo negro */
             border: 2px solid #000000; /* Bordes invisibles */
-            border-radius: 10px; /* Opcional, puedes quitar esto si no es necesario */
+            border-radius: 10px; /* Opcional */
         }
     </style>
 </head>
@@ -123,7 +123,8 @@
             drawRect(canvas.width - paddleWidth, cpuY, paddleWidth, paddleHeight, '#fd2dd5');
             drawCircle(ballX, ballY, ballSize, '#fff');
 
-            context.fillStyle = '#fd2dd5';
+            // Cambiamos el color del texto a blanco
+            context.fillStyle = '#ffffff';
             context.font = '20px Arial';
             context.fillText(`Jugador: ${playerScore}`, 20, 30);
             context.fillText(`CPU: ${cpuScore}`, canvas.width - 100, 30);
