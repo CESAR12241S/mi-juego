@@ -5,8 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Juego de Pong</title>
     <style>
-        body {
+        * {
             margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
             display: flex;
             justify-content: center;
             align-items: center;
@@ -14,11 +18,11 @@
             background-color: #000;
         }
         canvas {
-            border: none; /* No border here */
-            border-radius: 10px;
-            box-sizing: border-box;
             width: 100%;
-            height: auto;
+            max-width: 800px; /* Tamaño máximo para pantallas grandes */
+            aspect-ratio: 16 / 10; /* Proporción del canvas */
+            border: 2px solid #fd2dd5;
+            border-radius: 10px;
         }
     </style>
 </head>
@@ -30,7 +34,7 @@
 
         const paddleWidth = 10, paddleHeight = 100;
         const ballSize = 10;
-        const playerSpeed = 8, cpuEffectiveness = 0.7;
+        const playerSpeed = 8, cpuEffectiveness = 0.8; // Ajuste de efectividad
         const winningScore = 5;
         let playerY = (canvas.height - paddleHeight) / 2;
         let cpuY = (canvas.height - paddleHeight) / 2;
@@ -97,7 +101,6 @@
         }
 
         function movePaddles() {
-            const targetY = ballY - paddleHeight / 2;
             const cpuCenter = cpuY + paddleHeight / 2;
 
             if (cpuCenter < ballY - 35) {
